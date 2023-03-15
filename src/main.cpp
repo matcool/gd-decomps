@@ -28,51 +28,51 @@ class $modify(PlayLayer) {
         // local_44 = DAT_0071e000 ^ (uint)auStack_b4;
         this->m_totalTime = delta + this->m_totalTime;
         // local_78.x = (float)this;
-        if (from<bool>(this, 0x2ec) == false) {
+        if (m_debugPauseOff == false) {
             this->updateVisibility();
             return;
         }
-        from<double>(this, 0x508) = (double)delta + from<double>(this, 0x508);
+        this->unk508 = (double)delta + this->unk508;
         double dVar17 = 0.0;
-        if (from<double>(this, 0x518) <= 0.0) {
-            from<double>(this, 0x518) = get_time_idk();
+        if (this->unk518 <= 0.0) {
+            this->unk518 = get_time_idk();
         }
         if (this->m_level->m_levelType != GJLevelType::Local) {
-            if (from<bool>(this, 0x4f8) == false) {
-                if (0.0 < from<double>(this, 0x4e0)) {
+            if (m_shouldTryToKick == false) {
+                if (0.0 < m_inlineCalculatedKickTime) {
                     float local_70 = get_time_idk();
-                    double local_98 = (double)local_70 - from<double>(this, 0x4e0);
+                    double local_98 = (double)local_70 - m_inlineCalculatedKickTime;
                     auto* pCVar5 = cocos2d::CCDirector::sharedDirector();
                     // is this director->getDeltaTime() ?
-                    dVar17 = (double)*(float*)(pCVar5 + 0x68) + from<double>(this, 0x4e8);
-                    from<double>(this, 0x4e8) = dVar17;
+                    dVar17 = (double)*(float*)(pCVar5 + 0x68) + m_accumulatedKickDeltaTime;
+                    m_accumulatedKickDeltaTime = dVar17;
                     if ((0.0 <= (double)local_98) && ((double)local_98 <= 100.0)) {
                         if ((double)local_98 <= 2.0)
                             goto LAB_00602be9;
                         if ((double)local_98 <= dVar17 * 1.149999976158142) {
-                            from<int>(this, 0x500) = from<int>(this, 0x500) + -1;
+                            m_accumulatedKickCounter = m_accumulatedKickCounter + -1;
                         } else {
-                            from<int>(this, 0x500) = from<int>(this, 0x500) + 1;
+                            m_accumulatedKickCounter = m_accumulatedKickCounter + 1;
                         }
-                        if (from<int>(this, 0x500) < 0) {
-                            from<int>(this, 0x500) = 0;
+                        if (m_accumulatedKickCounter < 0) {
+                            m_accumulatedKickCounter = 0;
                         }
-                        if (2 < from<int>(this, 0x500)) {
-                            from<bool>(this, 0x4f8) = true;
+                        if (2 < m_accumulatedKickCounter) {
+                            m_shouldTryToKick = true;
                             int iVar14 = rand();
-                            from<float>(this, 0x4fc) = ((float)iVar14 / 32767.0) * 10.0;
-                            from<double>(this, 0x4e0) = (double)local_70;
+                            m_kickCheckDeltaSnapshot = ((float)iVar14 / 32767.0) * 10.0;
+                            m_inlineCalculatedKickTime = (double)local_70;
                         }
-                        if (from<bool>(this, 0x4f8) != false)
+                        if (m_shouldTryToKick != false)
                             goto LAB_00602be9;
                     }
-                    from<double>(this, 0x4e0) = 0.0;
+                    m_inlineCalculatedKickTime = 0.0;
                 } else {
-                    from<double>(this, 0x4e0) = get_time_idk();
+                    m_inlineCalculatedKickTime = get_time_idk();
                 }
             } else {
                 dVar17 = get_time_idk();
-                if ((double)from<float>(this, 0x4fc) < dVar17 - from<double>(this, 0x4e0)) {
+                if ((double)m_kickCheckDeltaSnapshot < dVar17 - m_inlineCalculatedKickTime) {
                     this->onQuit();
                 }
             }
@@ -87,6 +87,7 @@ class $modify(PlayLayer) {
         auto* pPVar12 = this->m_player1;
         pPVar12->m_collisionLog->removeAllObjects();
         pPVar12->m_collisionLog1->removeAllObjects();
+        // not in geode! no idea what they are either..
         from<int>(pPVar12, 0x4b8) = 0;
         from<int>(pPVar12, 0x4bc) = 0;
         if (this->m_isDualMode != false) {
@@ -371,6 +372,7 @@ class $modify(PlayLayer) {
         this->m_player2->m_unk688 = this->m_totalTime;
         if (this->m_isAudioMeteringSupported == false) {
             auto* this_01 = this->m_audioEffectsLayer;
+            // FIXME: add AudioEffectsLayer members to geode
             from<float>(this_01, 0x1a4) = (float)from<float>(this_01, 0x1a4) + delta;
             if (from<CCArray*>(this_01, 0x1a0) != (CCArray*)0x0) {
                 this_01->audioStep(local_84);
@@ -383,8 +385,7 @@ class $modify(PlayLayer) {
                 this->m_player2->setPosition(CStack_60);
             }
         }
-        // this->updateProgressbar();
-        // this->updateEffectPositions();
-        return;
+        this->updateProgressbar();
+        this->updateEffectPositions();
     }
 };
