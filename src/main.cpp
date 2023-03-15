@@ -249,7 +249,7 @@ class $modify(PlayLayer) {
                     m_player1->update(fStack_80);
                     this->checkCollisions(this->m_player1, fStack_80);
                     this->m_player1->updateSpecial((float)local_9c);
-                    if ((cStack_85 != '\0') && (this->m_isDualMode != false)) {
+                    if ((cStack_85 != false) && (this->m_isDualMode != false)) {
                         m_player2->update(fStack_80);
                         this->checkCollisions(this->m_player2, fStack_80);
                         this->m_player2->PlayerObject::updateSpecial((float)local_9c);
@@ -325,7 +325,7 @@ class $modify(PlayLayer) {
         if (uVar6 != 0) {
             do {
                 auto* pCVar7 = (GameObject*)this->m_screenRingObjects->objectAtIndex(uVar13);
-                if (pCVar7->m_isDontFade == '\0') {
+                if (pCVar7->m_isDontFade == false) {
                     pCVar7->powerOffObject();
                     // (**(code**)((int)pCVar7->field0_0x0 + 0x27c))();
                 }
