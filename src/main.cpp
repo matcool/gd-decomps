@@ -98,12 +98,12 @@ class $modify(PlayLayer) {
         if (m_isDualMode) {
             m_player2->m_touchingRings->removeAllObjects();
         }
-        for (int uVar13 = 0; uVar13 < m_screenRingObjects->count(); uVar13++) {
+        for (unsigned int uVar13 = 0; uVar13 < m_screenRingObjects->count(); uVar13++) {
             auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(uVar13);
             pCVar7->m_unk36D = false;
         }
         double local_84 = delta * 60.0;
-        for (int uVar13 = 0; uVar13 < this->unk358->count(); ++uVar13) {
+        for (unsigned int uVar13 = 0; uVar13 < this->unk358->count(); ++uVar13) {
             // i have no idea what object this is, its never referenced anywhere
             auto* pCVar7 = (CCNode*)this->unk358->objectAtIndex(uVar13);
             pCVar7->update(local_84);
@@ -238,7 +238,7 @@ class $modify(PlayLayer) {
                     this_03->flipGravity(!this_03->m_isUpsideDown, true);
                     this_03->m_yVelocity = this_03->m_isUpsideDown ? 2.0 : -2.0;
                     auto pCVar8 = local_8c->getPosition();
-                    auto* this_02 = CCCircleWave::create(local_9c + 2.0,local_9c * 4.0,0.3,false,false);
+                    auto* this_02 = CCCircleWave::create(local_9c + 2.f, local_9c * 4.f, 0.3f, false, false);
                     this_02->m_color = local_8c->m_playerColor1;
                     this_02->m_lineWidth = 4;
                     this_02->setPosition(pCVar8);
@@ -248,10 +248,10 @@ class $modify(PlayLayer) {
                 }
             }
         }
-        for (int uVar13 = 0; uVar13 < m_screenRingObjects->count(); ++uVar13) {
+        for (unsigned int uVar13 = 0; uVar13 < m_screenRingObjects->count(); ++uVar13) {
             auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(uVar13);
-            // pCVar7->updateState();
-            if (!pCVar7->m_isDontFade) {
+            // inlined GameObject::updateState()
+            if (!pCVar7->m_unk36D) {
                 pCVar7->powerOffObject();
             }
         }
