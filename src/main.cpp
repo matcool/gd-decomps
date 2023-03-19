@@ -30,8 +30,7 @@ class $modify(PlayLayer) {
             this->updateVisibility();
             return;
         }
-        this->unk508 = (double)delta + this->unk508;
-        double dVar17 = 0.0;
+        this->unk508 += delta;
         if (this->unk518 <= 0.0) {
             this->unk518 = get_time_idk();
         }
@@ -42,7 +41,7 @@ class $modify(PlayLayer) {
                     double local_98 = (double)local_70 - m_inlineCalculatedKickTime;
                     auto* pCVar5 = cocos2d::CCDirector::sharedDirector();
                     // is this director->getDeltaTime() ?
-                    dVar17 = (double)*(float*)(pCVar5 + 0x68) + m_accumulatedKickDeltaTime;
+                    double dVar17 = (double)*(float*)(pCVar5 + 0x68) + m_accumulatedKickDeltaTime;
                     m_accumulatedKickDeltaTime = dVar17;
                     if ((0.0 <= (double)local_98) && ((double)local_98 <= 100.0)) {
                         if ((double)local_98 <= 2.0)
@@ -69,7 +68,7 @@ class $modify(PlayLayer) {
                     m_inlineCalculatedKickTime = get_time_idk();
                 }
             } else {
-                dVar17 = get_time_idk();
+                double dVar17 = get_time_idk();
                 if ((double)m_kickCheckDeltaSnapshot < dVar17 - m_inlineCalculatedKickTime) {
                     this->onQuit();
                 }
@@ -97,16 +96,10 @@ class $modify(PlayLayer) {
         }
         pPVar12 = m_player1;
         if (!pPVar12->m_isLocked) {
-            // cocos2d::CCPoint::CCPoint(&local_98, &pPVar12->m_position);
-            // (**(code**)(*(int*)&((m_player1)->field0_0x0).inherit.field0_0x0 +
-            //             0x5c))();
             m_player1->setPosition(pPVar12->m_position);
         }
         if ((m_isDualMode) &&
             (pPVar12 = m_player2, pPVar12->m_isLocked == false)) {
-            // cocos2d::CCPoint::CCPoint(&local_98, &pPVar12->m_position);
-            // (**(code**)(*(int*)&((m_player2)->field0_0x0).inherit.field0_0x0 +
-            //             0x5c))();
             m_player2->setPosition(pPVar12->m_position);
         }
         m_player1->m_touchingRings->removeAllObjects();
@@ -119,7 +112,6 @@ class $modify(PlayLayer) {
             do {
                 auto* pCVar7 = m_screenRingObjects->objectAtIndex(uVar13);
                 uVar13 = uVar13 + 1;
-                // *(undefined*)((int)&pCVar7[0x1b].m_nTag + 1) = 0;
                 uVar6 = m_screenRingObjects->count();
             } while (uVar13 < uVar6);
         }
@@ -128,7 +120,6 @@ class $modify(PlayLayer) {
         if (uVar6 != 0) {
             do {
                 auto* pCVar7 = this->unk358->objectAtIndex(uVar13);
-                // (**(code**)((int)pCVar7->field0_0x0 + 0x10))();
                 uVar13 = uVar13 + 1;
                 uVar6 = this->unk358->count();
             } while (uVar13 < uVar6);
@@ -136,13 +127,12 @@ class $modify(PlayLayer) {
         double local_84 = delta * 60.0;
         double local_9c = local_84 * 4.0;
         double local_98;
+        double dVar17;
         if (local_9c < 0.0) {
             local_98 = local_9c - 0.5;
-            // pCStack_cc = (CCNode*)0x602de8;
             dVar17 = ceil((double)local_98);
         } else {
             local_98 = local_9c + 0.5;
-            // pCStack_cc = (CCNode*)0x602dc9;
             dVar17 = floor((double)local_98);
         }
         float local_8c = dVar17;
@@ -150,11 +140,9 @@ class $modify(PlayLayer) {
         if (4.0 <= (float)local_8c) {
             if ((float)local_9c < 0.0) {
                 local_98 = (double)((float)local_9c - 0.5);
-                // pCStack_cc = (CCNode*)0x602e4b;
                 dVar17 = ceil((double)local_98);
             } else {
                 local_98 = (double)((float)local_9c + 0.5);
-                // pCStack_cc = (CCNode*)0x602e2c;
                 dVar17 = floor((double)local_98);
             }
             local_9c = (float)dVar17;
@@ -199,7 +187,6 @@ class $modify(PlayLayer) {
                 m_spawnedGroups->removeAllObjects();
                 bool cStack_85 = m_isDualMode;
                 float pPVar18 = m_player1->getPosition().y - m_player1->m_firstPosition.y;
-                // pPStack_7c = (PlayLayer *)pPVar19;
                 if (!m_isDead) {
                     fVar16 = fabs(pPVar18 - m_player1->m_unk69C);
                     if (fStack_80 * 16.0 < fVar16) {
@@ -246,13 +233,10 @@ class $modify(PlayLayer) {
                m_player2->m_isBall &&
                    (!m_levelSettings->m_twoPlayerMode)))) &&
             (pPVar12->m_isUpsideDown == m_player2->m_isUpsideDown)) {
-            float fVar15 =  pPVar12->getScaleX(); // (float10)(**(code**)(*(int*)&(pPVar12->field0_0x0).inherit.field0_0x0 + 0x40))();
+            float fVar15 =  pPVar12->getScaleX();
             float local_78_x = (float)(pPVar12->getScaleX() * (float10)30.0 * (float10)0.5);
-            fVar15 = m_player2->getScaleX(); //(float10)(**(code**)(*(int*)&((m_player2)->field0_0x0).inherit.field0_0x0 +0x40))();
+            fVar15 = m_player2->getScaleX();
             float local_98 = m_player2->getScaleX() * (float10)30.0 * (float10)0.5;
-            // iVar14 = (**(code**)(*(int*)&((m_player1)->field0_0x0).inherit.field0_0x0 + 100))();
-            // iVar10 = (**(code**)(*(int*)&((m_player2)->field0_0x0).inherit.field0_0x0 + 100))();
-            // fVar16 = *(float*)(iVar14 + 4) - *(float*)(iVar10 + 4);
             float fVar16 = fabs(m_player1->getPosition().y - m_player2->getPosition().y);
             float local_9c = local_78_x;
             if (fVar16 < local_98 + local_78_x + 5.0) {
@@ -269,11 +253,9 @@ class $modify(PlayLayer) {
                         local_8c = pPVar3;
                         local_9c = local_98;
                     }
-                    // pCStack_cc = (CCNode*)0x603376;
                     this_03->flipGravity(!this_03->m_isUpsideDown, true);
                     this_03->m_yVelocity = this_03->m_isUpsideDown ? 2.0 : -2.0;
                     auto pCVar8 = local_8c->getPosition();
-                    // cocos2d::CCPoint::CCPoint(&local_78, pCVar8);
                     auto* this_02 = CCCircleWave::create(local_9c + 2.0,local_9c * 4.0,0.3,false,false);
                     this_02->m_color = local_8c->m_playerColor1;
                     this_02->m_lineWidth = 4;
@@ -292,7 +274,6 @@ class $modify(PlayLayer) {
                 // pCVar7->updateState();
                 if (!pCVar7->m_isDontFade) {
                     pCVar7->powerOffObject();
-                    // (**(code**)((int)pCVar7->field0_0x0 + 0x27c))();
                 }
                 uVar13 = uVar13 + 1;
                 uVar6 = m_screenRingObjects->count();
@@ -303,13 +284,10 @@ class $modify(PlayLayer) {
         CCPoint CStack_60;
         pPVar12 = m_player1;
         if (!pPVar12->m_isLocked) {
-            auto pCVar8 = m_player1->getPosition(); //(CCPoint*)(**(code**)(*(int*)&(pPVar12->field0_0x0).inherit.field0_0x0 + 100))();
+            auto pCVar8 = m_player1->getPosition();
             auto local_98 = pCVar8;
             m_player1->m_position = m_player1->getPosition();
             if (m_isDualMode) {
-                // pCVar8 = (CCPoint*)(**(code**)(*(int*)&((m_player2)->field0_0x0).inherit.field0_0x0 + 100))();
-                // cocos2d::CCPoint::CCPoint(&local_98, pCVar8);
-                // cocos2d::CCPoint::operator=(&(m_player2)->m_position, &local_98);
                 m_player2->m_position = m_player2->getPosition();
             }
             fVar16 = m_mirrorTransition;
@@ -318,15 +296,11 @@ class $modify(PlayLayer) {
                     fVar16 = 1.0 - fVar16;
                 }
                 bVar4 = true;
-                // auto local_98 = fVar16 * 150.0;
-                // pCStack_cc = (CCNode*)0x6035c0;
                 auto local_58 = CCPoint(fVar16 * 150.0, 0.0);
-                auto pCVar8 = m_player1->getPosition(); // (CCPoint*)(**(code**)(*(int*)&((m_player1)->field0_0x0).inherit.field0_0x0 + 100))();
-                // cocos2d::CCPoint::operator+(pCVar8, &local_78);
-                // cocos2d::CCPoint::operator=(&CStack_68, &local_78);
+                auto pCVar8 = m_player1->getPosition();
                 CStack_68 = pCVar8 + local_58;
                 if (m_isDualMode) {
-                    pCVar8 = m_player2->getPosition(); //(CCPoint*)(**(code**)(*(int*)&((m_player2)->field0_0x0).inherit.field0_0x0 + 100))();
+                    pCVar8 = m_player2->getPosition();
                     CStack_60 = pCVar8 + local_58;
                 }
             }
