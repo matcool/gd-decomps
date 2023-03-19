@@ -11,8 +11,8 @@ inline __forceinline T& from(P* ptr, intptr_t offset) {
 // this->field\d+?_(0x[0-9a-fA-F]+)
 // from<void>(this, $1)
 
-// this is some semi-inlined static function on windows,
-// which does the same as this one i hope. besides, the time is only used for the anti cheat so who cares!
+// this is some semi-inlined static function on windows, which does the same as this one i hope.
+// besides, the time is only used for the anti cheat so who cares!
 float getTimeInSeconds() {
     return time(nullptr);
 }
@@ -45,7 +45,7 @@ class $modify(PlayLayer) {
                         if (m_accumulatedKickCounter < 0) {
                             m_accumulatedKickCounter = 0;
                         }
-                        if (2 < m_accumulatedKickCounter) {
+                        if (m_accumulatedKickCounter > 2) {
                             m_shouldTryToKick = true;
                             m_kickCheckDeltaSnapshot = (static_cast<float>(rand()) / float(RAND_MAX)) * 10.0;
                             m_inlineCalculatedKickTime = timeSeconds;
@@ -56,10 +56,8 @@ class $modify(PlayLayer) {
                 } else {
                     m_inlineCalculatedKickTime = getTimeInSeconds();
                 }
-            } else {
-                if (m_kickCheckDeltaSnapshot < getTimeInSeconds() - m_inlineCalculatedKickTime) {
-                    this->onQuit();
-                }
+            } else if (m_kickCheckDeltaSnapshot < getTimeInSeconds() - m_inlineCalculatedKickTime) {
+                this->onQuit();
             }
         }
 
@@ -120,12 +118,14 @@ class $modify(PlayLayer) {
         m_effectManager->preCollisionCheck();
         if (subStepCount > 0) {
             for (int curStep = 0; curStep < subStepCount; curStep++) {
-                const float pPStack_7c = this->unknown5f4;
-                if (pPStack_7c != 0.0) {
+                // set every time the player changes speed,
+                // only to then get set to 0 and set the actual m_playerSpeed o_O
+                const float somePlayerSpeed = this->unknown5f4;
+                if (somePlayerSpeed != 0.0) {
                     this->unknown5f4 = 0.0;
-                    m_player1->updateTimeMod(pPStack_7c);
+                    m_player1->updateTimeMod(somePlayerSpeed);
                     if (m_isDualMode) {
-                        m_player2->updateTimeMod(pPStack_7c);
+                        m_player2->updateTimeMod(somePlayerSpeed);
                     }
                 }
                 if (!m_isDead) {
