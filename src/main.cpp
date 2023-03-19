@@ -39,25 +39,22 @@ class $modify(PlayLayer) {
                 if (0.0 < m_inlineCalculatedKickTime) {
                     float local_70 = get_time_idk();
                     double local_98 = (double)local_70 - m_inlineCalculatedKickTime;
-                    auto* pCVar5 = cocos2d::CCDirector::sharedDirector();
-                    // is this director->getDeltaTime() ?
-                    double dVar17 = (double)*(float*)(pCVar5 + 0x68) + m_accumulatedKickDeltaTime;
+                    double dVar17 = cocos2d::CCDirector::sharedDirector()->getActualDeltaTime() + m_accumulatedKickDeltaTime;
                     m_accumulatedKickDeltaTime = dVar17;
                     if ((0.0 <= (double)local_98) && ((double)local_98 <= 100.0)) {
                         if ((double)local_98 <= 2.0)
                             goto LAB_00602be9;
                         if ((double)local_98 <= dVar17 * 1.149999976158142) {
-                            m_accumulatedKickCounter = m_accumulatedKickCounter + -1;
+                            m_accumulatedKickCounter--;
                         } else {
-                            m_accumulatedKickCounter = m_accumulatedKickCounter + 1;
+                            m_accumulatedKickCounter++;
                         }
                         if (m_accumulatedKickCounter < 0) {
                             m_accumulatedKickCounter = 0;
                         }
                         if (2 < m_accumulatedKickCounter) {
                             m_shouldTryToKick = true;
-                            int iVar14 = rand();
-                            m_kickCheckDeltaSnapshot = ((float)iVar14 / 32767.0) * 10.0;
+                            m_kickCheckDeltaSnapshot = ((float)rand() / 32767.0) * 10.0;
                             m_inlineCalculatedKickTime = (double)local_70;
                         }
                         if (m_shouldTryToKick)
@@ -76,47 +73,37 @@ class $modify(PlayLayer) {
         }
 
     LAB_00602be9:
-        auto* this_00 = m_effectManager;
-        this_00->updateColorEffects(delta);
-        this_00->updatePulseEffects(delta);
-        this_00->updateOpacityEffects(delta);
-        this_00->updateSpawnTriggers(delta);
-        auto* pPVar12 = m_player1;
-        pPVar12->m_collisionLog->removeAllObjects();
-        pPVar12->m_collisionLog1->removeAllObjects();
+        m_effectManager->updateColorEffects(delta);
+        m_effectManager->updatePulseEffects(delta);
+        m_effectManager->updateOpacityEffects(delta);
+        m_effectManager->updateSpawnTriggers(delta);
+        m_player1->m_collisionLog->removeAllObjects();
+        m_player1->m_collisionLog1->removeAllObjects();
         // not in geode! no idea what they are either..
-        from<int>(pPVar12, 0x4b8) = 0;
-        from<int>(pPVar12, 0x4bc) = 0;
+        from<int>(m_player1, 0x4b8) = 0;
+        from<int>(m_player1, 0x4bc) = 0;
         if (m_isDualMode) {
-            pPVar12 = m_player2;
-            pPVar12->m_collisionLog->removeAllObjects();
-            pPVar12->m_collisionLog1->removeAllObjects();
-            from<int>(pPVar12, 0x4b8) = 0;
-            from<int>(pPVar12, 0x4bc) = 0;
+            m_player2->m_collisionLog->removeAllObjects();
+            m_player2->m_collisionLog1->removeAllObjects();
+            from<int>(m_player2, 0x4b8) = 0;
+            from<int>(m_player2, 0x4bc) = 0;
         }
-        pPVar12 = m_player1;
-        if (!pPVar12->m_isLocked) {
-            m_player1->setPosition(pPVar12->m_position);
+        if (!m_player1->m_isLocked) {
+            m_player1->setPosition(m_player1->m_position);
         }
-        if ((m_isDualMode) &&
-            (pPVar12 = m_player2, pPVar12->m_isLocked == false)) {
-            m_player2->setPosition(pPVar12->m_position);
+        if (m_isDualMode && !m_player2->m_isLocked) {
+            m_player2->setPosition(m_player2->m_position);
         }
         m_player1->m_touchingRings->removeAllObjects();
         if (m_isDualMode) {
             m_player2->m_touchingRings->removeAllObjects();
         }
-        int uVar13 = 0;
-        int uVar6 = m_screenRingObjects->count();
-        if (uVar6 != 0) {
-            do {
-                auto* pCVar7 = m_screenRingObjects->objectAtIndex(uVar13);
-                uVar13 = uVar13 + 1;
-                uVar6 = m_screenRingObjects->count();
-            } while (uVar13 < uVar6);
+        for (int uVar13 = 0; uVar13 < m_screenRingObjects->count(); uVar13++) {
+            auto* pCVar7 = m_screenRingObjects->objectAtIndex(uVar13);
+            ((GameObject*)pCVar7)->m_unk36D = false;
         }
-        uVar13 = 0;
-        uVar6 = this->unk358->count();
+        int uVar13 = 0;
+        int uVar6 = this->unk358->count();
         if (uVar6 != 0) {
             do {
                 auto* pCVar7 = this->unk358->objectAtIndex(uVar13);
@@ -228,28 +215,27 @@ class $modify(PlayLayer) {
         if (((((m_isDualMode) &&
                (m_player2->updateRotation(local_84),
                 m_isDualMode)) &&
-              (pPVar12 = m_player1, pPVar12->m_isBall)) &&
+              (m_player1->m_isBall)) &&
              ((
                m_player2->m_isBall &&
                    (!m_levelSettings->m_twoPlayerMode)))) &&
-            (pPVar12->m_isUpsideDown == m_player2->m_isUpsideDown)) {
-            float fVar15 =  pPVar12->getScaleX();
-            float local_78_x = (float)(pPVar12->getScaleX() * (float10)30.0 * (float10)0.5);
+            (m_player1->m_isUpsideDown == m_player2->m_isUpsideDown)) {
+            float fVar15 =  m_player1->getScaleX();
+            float local_78_x = (float)(m_player1->getScaleX() * (float10)30.0 * (float10)0.5);
             fVar15 = m_player2->getScaleX();
             float local_98 = m_player2->getScaleX() * (float10)30.0 * (float10)0.5;
             float fVar16 = fabs(m_player1->getPosition().y - m_player2->getPosition().y);
             float local_9c = local_78_x;
             if (fVar16 < local_98 + local_78_x + 5.0) {
-                pPVar12 = m_player1;
-                if ((pPVar12->m_isSliding) ||
+                if ((m_player1->m_isSliding) ||
                     (m_player2->m_isSliding)) {
                     // this is code for when the two balls touch in the same gravity in dual mode
 
                     auto* pPVar3 = m_player2;
                     auto* this_03 = pPVar3;
-                    auto* local_8c = pPVar12;
-                    if (!pPVar12->m_isSliding && pPVar3->m_isSliding) {
-                        this_03 = pPVar12;
+                    auto* local_8c = m_player1;
+                    if (!m_player1->m_isSliding && pPVar3->m_isSliding) {
+                        this_03 = m_player1;
                         local_8c = pPVar3;
                         local_9c = local_98;
                     }
@@ -282,8 +268,7 @@ class $modify(PlayLayer) {
         bool bVar4 = false;
         CCPoint CStack_68;
         CCPoint CStack_60;
-        pPVar12 = m_player1;
-        if (!pPVar12->m_isLocked) {
+        if (!m_player1->m_isLocked) {
             auto pCVar8 = m_player1->getPosition();
             auto local_98 = pCVar8;
             m_player1->m_position = m_player1->getPosition();
