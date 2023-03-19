@@ -99,19 +99,15 @@ class $modify(PlayLayer) {
             m_player2->m_touchingRings->removeAllObjects();
         }
         for (int uVar13 = 0; uVar13 < m_screenRingObjects->count(); uVar13++) {
-            auto* pCVar7 = m_screenRingObjects->objectAtIndex(uVar13);
-            ((GameObject*)pCVar7)->m_unk36D = false;
-        }
-        int uVar13 = 0;
-        int uVar6 = this->unk358->count();
-        if (uVar6 != 0) {
-            do {
-                auto* pCVar7 = this->unk358->objectAtIndex(uVar13);
-                uVar13 = uVar13 + 1;
-                uVar6 = this->unk358->count();
-            } while (uVar13 < uVar6);
+            auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(uVar13);
+            pCVar7->m_unk36D = false;
         }
         double local_84 = delta * 60.0;
+        for (int uVar13 = 0; uVar13 < this->unk358->count(); ++uVar13) {
+            // i have no idea what object this is, its never referenced anywhere
+            auto* pCVar7 = (CCNode*)this->unk358->objectAtIndex(uVar13);
+            pCVar7->update(local_84);
+        };
         double local_9c = local_84 * 4.0;
         double local_98;
         double dVar17;
@@ -252,18 +248,12 @@ class $modify(PlayLayer) {
                 }
             }
         }
-        uVar13 = 0;
-        uVar6 = m_screenRingObjects->count();
-        if (uVar6 != 0) {
-            do {
-                auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(uVar13);
-                // pCVar7->updateState();
-                if (!pCVar7->m_isDontFade) {
-                    pCVar7->powerOffObject();
-                }
-                uVar13 = uVar13 + 1;
-                uVar6 = m_screenRingObjects->count();
-            } while (uVar13 < uVar6);
+        for (int uVar13 = 0; uVar13 < m_screenRingObjects->count(); ++uVar13) {
+            auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(uVar13);
+            // pCVar7->updateState();
+            if (!pCVar7->m_isDontFade) {
+                pCVar7->powerOffObject();
+            }
         }
         bool bVar4 = false;
         CCPoint CStack_68;
