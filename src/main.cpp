@@ -163,25 +163,15 @@ class $modify(PlayLayer) {
             fVar16 = (float)local_9c;
         }
         int iVar14 = (int)fVar16;
-        // local_98 = (CCPoint)CONCAT44(local_98.y, iVar14);
-        // pCVar8 = (CCPoint*)(**(
-        //     code**)(*(int*)&((this->m_player1)->field0_0x0).inherit.field0_0x0 +
-        //             100))();
-        
-        CCPoint local_70 = m_player1->getPosition();
-        this->m_player1->m_unk64C = local_70;
+        this->m_player1->m_unk64C = m_player1->getPosition();
         if (this->m_isDualMode) {
-            local_70 = m_player2->getPosition();
-            this->m_player2->m_unk64C = local_70;
+            this->m_player2->m_unk64C = m_player2->getPosition();
         }
         float fStack_80 = local_84 / fVar16;
         local_9c = delta / (float)iVar14;
         m_effectManager->preCollisionCheck();
-        local_8c = 0;
         if (0 < iVar14) {
-            auto local_70 = iVar14 - 1;
-            do {
-                float pPVar12 = local_8c;
+            for (int pPVar12 = 0; pPVar12 < iVar14; ++pPVar12) {
                 float pPStack_7c = this->unknown5f4;
                 if ((float)pPStack_7c != 0.0) {
                     this->unknown5f4 = 0.0;
@@ -209,43 +199,30 @@ class $modify(PlayLayer) {
                     this->updateReplay(m_time);
                 }
                 m_spawnedGroups->removeAllObjects();
-                auto* pPVar3 = this->m_player1;
                 bool cStack_85 = this->m_isDualMode;
-                CCPoint pCVar9 = pPVar3->getPosition();
-                float pPVar18 = pCVar9.y - pPVar3->m_firstPosition.y;
+                float pPVar18 = m_player1->getPosition().y - m_player1->m_firstPosition.y;
                 // pPStack_7c = (PlayLayer *)pPVar19;
                 if (this->m_isDead == false) {
-                    pPVar3 = this->m_player1;
-                    fVar16 = fabs(pPVar18 - pPVar3->m_unk69C);
+                    fVar16 = fabs(pPVar18 - m_player1->m_unk69C);
                     if (fStack_80 * 16.0 < fVar16) {
                         pPVar18 = 0;
                     }
-                    dVar17 = (double)pPVar3->m_playerSpeed * pPVar3->m_xVelocity * (double)fStack_80;
+                    dVar17 = (double)m_player1->m_playerSpeed * m_player1->m_xVelocity * (double)fStack_80;
                 } else {
                     dVar17 = 0.0;
                 }
-                (this->m_effectManager)->m_velocity = (float)dVar17;
+                this->m_effectManager->m_velocity = (float)dVar17;
                 if (this->m_isDead != false) {
                     pPVar18 = 0;
                 }
                 this->m_effectManager->m_acceleration = (float)pPVar18;
-                this->m_effectManager->prepareMoveActions(local_9c, (int)pPVar12 < (int)local_70);
+                this->m_effectManager->prepareMoveActions(local_9c, pPVar12 < (iVar14 - 1));
                 this->processMoveActionsStep(local_9c);
-                if ((m_antiCheatPassed == false) &&
-                    (pPVar12 = local_8c, m_antiCheatObject != nullptr)) {
-                    // iVar14 = *(int*)&(m_antiCheatObject->inherit).field0_0x0;
-                    // pPVar12 = this->m_player1;
-                    // pfVar9 = (float*)(**(
-                    //     code**)(*(int*)&(m_antiCheatObject->inherit).field0_0x0 + 0x2b0))();
-                    auto iVar10 = m_antiCheatObject->getStartPos();
-                    // cocos2d::CCPoint::CCPoint((CCPoint*)&pCStack_cc, *pfVar9, *(float*)(iVar10 + 4));
-                    // this = pPStack_7c;
-                    m_antiCheatObject->setStartPos(CCPoint(iVar10.x, m_player1->getPosition().y));
-                    pPVar12 = local_8c;
+                if (m_antiCheatPassed == false && m_antiCheatObject != nullptr) {
+                    m_antiCheatObject->setStartPos(ccp(m_antiCheatObject->getStartPos().x, m_player1->getPosition().y));
                 }
                 this->updateCollisionBlocks();
                 if (this->m_isDead == false) {
-                    pPVar3 = this->m_player1;
                     m_player1->update(fStack_80);
                     this->checkCollisions(this->m_player1, fStack_80);
                     this->m_player1->updateSpecial((float)local_9c);
@@ -256,8 +233,7 @@ class $modify(PlayLayer) {
                     }
                     this->checkSpawnObjects();
                 }
-                local_8c = (float)((int)pPVar12 + 1);
-            } while ((int)local_8c < iVar14);
+            }
         }
 
         this->m_player1->updateCheckpointTest();
