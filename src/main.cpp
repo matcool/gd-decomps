@@ -69,14 +69,14 @@ class $modify(PlayLayer) {
         m_effectManager->updateSpawnTriggers(delta);
         m_player1->m_collisionLog->removeAllObjects();
         m_player1->m_collisionLog1->removeAllObjects();
-        // not in geode! no idea what they are either..
-        from<int>(m_player1, 0x4b8) = 0;
-        from<int>(m_player1, 0x4bc) = 0;
+        // no idea what these are..
+        m_player1->m_unk4B8 = 0;
+        m_player1->m_unk4BC = 0;
         if (m_isDualMode) {
             m_player2->m_collisionLog->removeAllObjects();
             m_player2->m_collisionLog1->removeAllObjects();
-            from<int>(m_player2, 0x4b8) = 0;
-            from<int>(m_player2, 0x4bc) = 0;
+            m_player2->m_unk4B8 = 0;
+            m_player2->m_unk4BC = 0;
         }
         if (!m_player1->m_isLocked) {
             m_player1->setPosition(m_player1->m_position);
@@ -100,6 +100,21 @@ class $modify(PlayLayer) {
             auto* node = static_cast<CCNode*>(this->unk358->objectAtIndex(i));
             node->update(delta60);
         };
+
+        // sub step calculation code:
+        // usually gd will always run 4 sub steps per frame,
+        // however on fpses < 60 the step count will be greater than 4
+        // as to try to match 60 fps physics.
+        // for example: 20 fps
+        // delta = 1 / 20
+        // delta240 = delta * 60 * 4 = 1/20 * 240 = 12
+        // 12 < 0 is false so floor(12 + 0.5) = floor(12.5) = 12.0
+        // 12.0 is greater than 4, so use that as the number of substeps
+        //
+        // fpses greater than 60 will never have 240 / fps be greater than 4, 
+        // so they will always be 4 steps
+        // unless you got delta to be negative in which case it would do the ceil and you could maybe get 5 steps,
+        // but good luck trying to get the delta to be negative
 
         const double delta240 = delta60 * 4.0;
         const float newStepCount = delta240 < 0.0 ? ceil(delta240 - 0.5) : floor(delta240 + 0.5);
@@ -260,9 +275,8 @@ class $modify(PlayLayer) {
         m_player2->m_unk688 = m_totalTime;
         if (!m_isAudioMeteringSupported) {
             auto* audioEffects = m_audioEffectsLayer;
-            // FIXME: add AudioEffectsLayer members to geode
-            from<float>(audioEffects, 0x1a4) = (float)from<float>(audioEffects, 0x1a4) + delta;
-            if (from<CCArray*>(audioEffects, 0x1a0) != (CCArray*)0x0) {
+            audioEffects->m_unk1A4 += delta;
+            if (audioEffects->m_unk1A0 != nullptr) {
                 audioEffects->audioStep(delta60);
             }
         }
