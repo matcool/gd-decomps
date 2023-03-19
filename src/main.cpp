@@ -17,6 +17,8 @@ float getTimeInSeconds() {
     return time(nullptr);
 }
 
+// using members from geode#9fb1c4d
+
 class $modify(PlayLayer) {
     void update(float delta) {
         m_totalTime += delta;
@@ -134,8 +136,9 @@ class $modify(PlayLayer) {
         m_effectManager->preCollisionCheck();
         if (subStepCount > 0) {
             for (int curStep = 0; curStep < subStepCount; curStep++) {
-                // set every time the player changes speed,
-                // only to then get set to 0 and set the actual m_playerSpeed o_O
+                // this is set every time the player changes speed,
+                // only to then get set to 0 and set the actual m_playerSpeed
+                // o_O
                 const float somePlayerSpeed = this->unknown5f4;
                 if (somePlayerSpeed != 0.0) {
                     this->unknown5f4 = 0.0;
