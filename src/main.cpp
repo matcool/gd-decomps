@@ -25,7 +25,7 @@ float get_time_idk() {
 
 class $modify(PlayLayer) {
     void update(float delta) {
-        m_totalTime = delta + m_totalTime;
+        m_totalTime += delta;
         if (!m_debugPauseOff) {
             this->updateVisibility();
             return;
@@ -37,9 +37,9 @@ class $modify(PlayLayer) {
         if (m_level->m_levelType != GJLevelType::Local) {
             if (!m_shouldTryToKick) {
                 if (0.0 < m_inlineCalculatedKickTime) {
-                    float local_70 = get_time_idk();
-                    double local_98 = (double)local_70 - m_inlineCalculatedKickTime;
-                    double dVar17 = cocos2d::CCDirector::sharedDirector()->getActualDeltaTime() + m_accumulatedKickDeltaTime;
+                    const float local_70 = get_time_idk();
+                    const double local_98 = (double)local_70 - m_inlineCalculatedKickTime;
+                    const double dVar17 = cocos2d::CCDirector::sharedDirector()->getActualDeltaTime() + m_accumulatedKickDeltaTime;
                     m_accumulatedKickDeltaTime = dVar17;
                     if ((0.0 <= (double)local_98) && ((double)local_98 <= 100.0)) {
                         if ((double)local_98 <= 2.0)
@@ -65,7 +65,7 @@ class $modify(PlayLayer) {
                     m_inlineCalculatedKickTime = get_time_idk();
                 }
             } else {
-                double dVar17 = get_time_idk();
+                const double dVar17 = get_time_idk();
                 if ((double)m_kickCheckDeltaSnapshot < dVar17 - m_inlineCalculatedKickTime) {
                     this->onQuit();
                 }
@@ -99,23 +99,23 @@ class $modify(PlayLayer) {
             m_player2->m_touchingRings->removeAllObjects();
         }
         for (unsigned int i = 0; i < m_screenRingObjects->count(); i++) {
-            auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(i);
-            pCVar7->m_unk36D = false;
+            auto* ring = static_cast<GameObject*>(m_screenRingObjects->objectAtIndex(i));
+            ring->m_unk36D = false;
         }
 
-        double delta60 = delta * 60.0;
+        const double delta60 = delta * 60.0;
 
         for (unsigned int i = 0; i < this->unk358->count(); ++i) {
-            // i have no idea what object this is, its never referenced anywhere
-            auto* pCVar7 = (CCNode*)this->unk358->objectAtIndex(i);
-            pCVar7->update(delta60);
+            // i have no idea what type this is, its never referenced anywhere
+            auto* node = static_cast<CCNode*>(this->unk358->objectAtIndex(i));
+            node->update(delta60);
         };
 
-        double delta240 = delta60 * 4.0;
-        float local_8c = delta240 < 0.0 ? ceil(delta240 - 0.5) : floor(delta240 + 0.5);
+        const double delta240 = delta60 * 4.0;
+        const float newStepCount = delta240 < 0.0 ? ceil(delta240 - 0.5) : floor(delta240 + 0.5);
         int subStepCount = 4;
-        if (local_8c >= 4.0) {
-            subStepCount = (int)local_8c;
+        if (newStepCount >= 4.0) {
+            subStepCount = static_cast<int>(newStepCount);
         }
 
         m_player1->m_unk64C = m_player1->getPosition();
@@ -123,22 +123,22 @@ class $modify(PlayLayer) {
             m_player2->m_unk64C = m_player2->getPosition();
         }
 
-        float stepDelta60 = delta60 / (float)subStepCount;
-        double stepDelta = delta / (float)subStepCount;
+        const float stepDelta60 = delta60 / (float)subStepCount;
+        const double stepDelta = delta / (float)subStepCount;
 
         m_effectManager->preCollisionCheck();
         if (subStepCount > 0) {
-            for (int pPVar12 = 0; pPVar12 < subStepCount; ++pPVar12) {
-                float pPStack_7c = this->unknown5f4;
-                if ((float)pPStack_7c != 0.0) {
+            for (int curStep = 0; curStep < subStepCount; curStep++) {
+                const float pPStack_7c = this->unknown5f4;
+                if (pPStack_7c != 0.0) {
                     this->unknown5f4 = 0.0;
-                    m_player1->updateTimeMod((float)pPStack_7c);
+                    m_player1->updateTimeMod(pPStack_7c);
                     if (m_isDualMode) {
-                        m_player2->updateTimeMod((float)pPStack_7c);
+                        m_player2->updateTimeMod(pPStack_7c);
                     }
                 }
                 if (!m_isDead) {
-                    m_time = (double)(float)stepDelta + m_time;
+                    m_time += stepDelta;
                     if (!this->unk42A) {
                         if (m_isPaused) {
                             this->saveRecordAction(false, m_player1);
@@ -155,25 +155,26 @@ class $modify(PlayLayer) {
                     }
                     this->updateReplay(m_time);
                 }
+
                 m_spawnedGroups->removeAllObjects();
-                bool cStack_85 = m_isDualMode;
+
+                const bool wasDualMode = m_isDualMode;
                 float pPVar18 = m_player1->getPosition().y - m_player1->m_firstPosition.y;
-                double dVar17;
                 if (!m_isDead) {
-                    float fVar16 = fabs(pPVar18 - m_player1->m_unk69C);
-                    if (stepDelta60 * 16.0 < fVar16) {
+                    if (stepDelta60 * 16.0 < fabs(pPVar18 - m_player1->m_unk69C)) {
                         pPVar18 = 0;
                     }
-                    dVar17 = (double)m_player1->m_playerSpeed * m_player1->m_xVelocity * (double)stepDelta60;
+                    m_effectManager->m_velocity = m_player1->m_playerSpeed * m_player1->m_xVelocity * stepDelta60;
                 } else {
-                    dVar17 = 0.0;
+                    m_effectManager->m_velocity = 0.0;
                 }
-                m_effectManager->m_velocity = (float)dVar17;
                 if (m_isDead) {
                     pPVar18 = 0;
                 }
-                m_effectManager->m_acceleration = (float)pPVar18;
-                m_effectManager->prepareMoveActions(stepDelta, pPVar12 < (subStepCount - 1));
+                // is this really acceleration?
+                m_effectManager->m_acceleration = pPVar18;
+                const bool isLastSubStep = curStep == (subStepCount - 1);
+                m_effectManager->prepareMoveActions(stepDelta, !isLastSubStep);
                 this->processMoveActionsStep(stepDelta);
                 if (!m_antiCheatPassed && m_antiCheatObject != nullptr) {
                     m_antiCheatObject->setStartPos(ccp(m_antiCheatObject->getStartPos().x, m_player1->getPosition().y));
@@ -182,11 +183,11 @@ class $modify(PlayLayer) {
                 if (!m_isDead) {
                     m_player1->update(stepDelta60);
                     this->checkCollisions(m_player1, stepDelta60);
-                    m_player1->updateSpecial((float)stepDelta);
-                    if ((cStack_85) && (m_isDualMode)) {
+                    m_player1->updateSpecial(stepDelta);
+                    if (wasDualMode && m_isDualMode) {
                         m_player2->update(stepDelta60);
                         this->checkCollisions(m_player2, stepDelta60);
-                        m_player2->updateSpecial((float)stepDelta);
+                        m_player2->updateSpecial(stepDelta);
                     }
                     this->checkSpawnObjects();
                 }
@@ -197,43 +198,39 @@ class $modify(PlayLayer) {
         m_effectManager->postCollisionCheck();
         this->updateQueuedLabels();
         m_player1->updateRotation(delta60);
-        if (((((m_isDualMode) &&
-               (m_player2->updateRotation(delta60),
-                m_isDualMode)) &&
-              (m_player1->m_isBall)) &&
-             ((
-               m_player2->m_isBall &&
-                   (!m_levelSettings->m_twoPlayerMode)))) &&
-            (m_player1->m_isUpsideDown == m_player2->m_isUpsideDown)) {
-            float fVar15 =  m_player1->getScaleX();
-            float local_78_x = (float)(m_player1->getScaleX() * (float10)30.0 * (float10)0.5);
-            fVar15 = m_player2->getScaleX();
-            float local_98 = m_player2->getScaleX() * (float10)30.0 * (float10)0.5;
-            float fVar16 = fabs(m_player1->getPosition().y - m_player2->getPosition().y);
-            float local_9c = local_78_x;
-            if (fVar16 < local_98 + local_78_x + 5.0) {
-                if ((m_player1->m_isSliding) ||
-                    (m_player2->m_isSliding)) {
-                    // this is code for when the two balls touch in the same gravity in dual mode
-
-                    auto* pPVar3 = m_player2;
-                    auto* this_03 = pPVar3;
-                    auto* local_8c = m_player1;
-                    if (!m_player1->m_isSliding && pPVar3->m_isSliding) {
-                        this_03 = m_player1;
-                        local_8c = pPVar3;
-                        local_9c = local_98;
+        if (m_isDualMode) {
+            m_player2->updateRotation(delta60);
+            if (m_player1->m_isBall && m_player2->m_isBall // if both players are ball
+                && !m_levelSettings->m_twoPlayerMode // and its not two player mode
+                && m_player1->m_isUpsideDown == m_player2->m_isUpsideDown // and they match gravity
+            ) {
+                const float local_78_x = (float)(m_player1->getScaleX() * (float10)30.0 * (float10)0.5);
+                const float local_98 = m_player2->getScaleX() * (float10)30.0 * (float10)0.5;
+                const float fVar16 = fabs(m_player1->getPosition().y - m_player2->getPosition().y);
+                float local_9c = local_78_x;
+                if (fVar16 < local_98 + local_78_x + 5.0) {
+                    if ((m_player1->m_isSliding) ||
+                        (m_player2->m_isSliding)) {
+                        // this is code for when the two balls touch in the same gravity in dual mode
+                        auto* pPVar3 = m_player2;
+                        auto* this_03 = pPVar3;
+                        auto* local_8c = m_player1;
+                        if (!m_player1->m_isSliding && pPVar3->m_isSliding) {
+                            this_03 = m_player1;
+                            local_8c = pPVar3;
+                            local_9c = local_98;
+                        }
+                        this_03->flipGravity(!this_03->m_isUpsideDown, true);
+                        this_03->m_yVelocity = this_03->m_isUpsideDown ? 2.0 : -2.0;
+                        auto pCVar8 = local_8c->getPosition();
+                        auto* this_02 = CCCircleWave::create(local_9c + 2.f, local_9c * 4.f, 0.3f, false, false);
+                        this_02->m_color = local_8c->m_playerColor1;
+                        this_02->m_lineWidth = 4;
+                        this_02->setPosition(pCVar8);
+                        m_objectLayer->addChild(this_02, 0);
+                        this_02->m_filled = 1;
+                        this_02->followObject(local_8c, false);
                     }
-                    this_03->flipGravity(!this_03->m_isUpsideDown, true);
-                    this_03->m_yVelocity = this_03->m_isUpsideDown ? 2.0 : -2.0;
-                    auto pCVar8 = local_8c->getPosition();
-                    auto* this_02 = CCCircleWave::create(local_9c + 2.f, local_9c * 4.f, 0.3f, false, false);
-                    this_02->m_color = local_8c->m_playerColor1;
-                    this_02->m_lineWidth = 4;
-                    this_02->setPosition(pCVar8);
-                    m_objectLayer->addChild(this_02, 0);
-                    this_02->m_filled = 1;
-                    this_02->followObject(local_8c, false);
                 }
             }
         }
