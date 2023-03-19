@@ -98,49 +98,36 @@ class $modify(PlayLayer) {
         if (m_isDualMode) {
             m_player2->m_touchingRings->removeAllObjects();
         }
-        for (unsigned int uVar13 = 0; uVar13 < m_screenRingObjects->count(); uVar13++) {
-            auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(uVar13);
+        for (unsigned int i = 0; i < m_screenRingObjects->count(); i++) {
+            auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(i);
             pCVar7->m_unk36D = false;
         }
-        double local_84 = delta * 60.0;
-        for (unsigned int uVar13 = 0; uVar13 < this->unk358->count(); ++uVar13) {
+
+        double delta60 = delta * 60.0;
+
+        for (unsigned int i = 0; i < this->unk358->count(); ++i) {
             // i have no idea what object this is, its never referenced anywhere
-            auto* pCVar7 = (CCNode*)this->unk358->objectAtIndex(uVar13);
-            pCVar7->update(local_84);
+            auto* pCVar7 = (CCNode*)this->unk358->objectAtIndex(i);
+            pCVar7->update(delta60);
         };
-        double local_9c = local_84 * 4.0;
-        double local_98;
-        double dVar17;
-        if (local_9c < 0.0) {
-            local_98 = local_9c - 0.5;
-            dVar17 = ceil((double)local_98);
-        } else {
-            local_98 = local_9c + 0.5;
-            dVar17 = floor((double)local_98);
+
+        double delta240 = delta60 * 4.0;
+        float local_8c = delta240 < 0.0 ? ceil(delta240 - 0.5) : floor(delta240 + 0.5);
+        float stepsCountF = 4.0;
+        if (local_8c >= 4.0) {
+            stepsCountF = local_8c;
         }
-        float local_8c = dVar17;
-        float fVar16 = 4.0;
-        if (4.0 <= (float)local_8c) {
-            if ((float)local_9c < 0.0) {
-                local_98 = (double)((float)local_9c - 0.5);
-                dVar17 = ceil((double)local_98);
-            } else {
-                local_98 = (double)((float)local_9c + 0.5);
-                dVar17 = floor((double)local_98);
-            }
-            local_9c = (float)dVar17;
-            fVar16 = (float)local_9c;
-        }
-        int iVar14 = (int)fVar16;
+        int subStepCount = (int)stepsCountF;
+
         m_player1->m_unk64C = m_player1->getPosition();
         if (m_isDualMode) {
             m_player2->m_unk64C = m_player2->getPosition();
         }
-        float fStack_80 = local_84 / fVar16;
-        local_9c = delta / (float)iVar14;
+        float stepDelta60 = delta60 / stepsCountF;
+        double stepDelta = delta / (float)subStepCount;
         m_effectManager->preCollisionCheck();
-        if (0 < iVar14) {
-            for (int pPVar12 = 0; pPVar12 < iVar14; ++pPVar12) {
+        if (0 < subStepCount) {
+            for (int pPVar12 = 0; pPVar12 < subStepCount; ++pPVar12) {
                 float pPStack_7c = this->unknown5f4;
                 if ((float)pPStack_7c != 0.0) {
                     this->unknown5f4 = 0.0;
@@ -150,7 +137,7 @@ class $modify(PlayLayer) {
                     }
                 }
                 if (!m_isDead) {
-                    m_time = (double)(float)local_9c + m_time;
+                    m_time = (double)(float)stepDelta + m_time;
                     if (!this->unk42A) {
                         if (m_isPaused) {
                             this->saveRecordAction(false, m_player1);
@@ -170,12 +157,13 @@ class $modify(PlayLayer) {
                 m_spawnedGroups->removeAllObjects();
                 bool cStack_85 = m_isDualMode;
                 float pPVar18 = m_player1->getPosition().y - m_player1->m_firstPosition.y;
+                double dVar17;
                 if (!m_isDead) {
-                    fVar16 = fabs(pPVar18 - m_player1->m_unk69C);
-                    if (fStack_80 * 16.0 < fVar16) {
+                    float fVar16 = fabs(pPVar18 - m_player1->m_unk69C);
+                    if (stepDelta60 * 16.0 < fVar16) {
                         pPVar18 = 0;
                     }
-                    dVar17 = (double)m_player1->m_playerSpeed * m_player1->m_xVelocity * (double)fStack_80;
+                    dVar17 = (double)m_player1->m_playerSpeed * m_player1->m_xVelocity * (double)stepDelta60;
                 } else {
                     dVar17 = 0.0;
                 }
@@ -184,20 +172,20 @@ class $modify(PlayLayer) {
                     pPVar18 = 0;
                 }
                 m_effectManager->m_acceleration = (float)pPVar18;
-                m_effectManager->prepareMoveActions(local_9c, pPVar12 < (iVar14 - 1));
-                this->processMoveActionsStep(local_9c);
+                m_effectManager->prepareMoveActions(stepDelta, pPVar12 < (subStepCount - 1));
+                this->processMoveActionsStep(stepDelta);
                 if (!m_antiCheatPassed && m_antiCheatObject != nullptr) {
                     m_antiCheatObject->setStartPos(ccp(m_antiCheatObject->getStartPos().x, m_player1->getPosition().y));
                 }
                 this->updateCollisionBlocks();
                 if (!m_isDead) {
-                    m_player1->update(fStack_80);
-                    this->checkCollisions(m_player1, fStack_80);
-                    m_player1->updateSpecial((float)local_9c);
+                    m_player1->update(stepDelta60);
+                    this->checkCollisions(m_player1, stepDelta60);
+                    m_player1->updateSpecial((float)stepDelta);
                     if ((cStack_85) && (m_isDualMode)) {
-                        m_player2->update(fStack_80);
-                        this->checkCollisions(m_player2, fStack_80);
-                        m_player2->updateSpecial((float)local_9c);
+                        m_player2->update(stepDelta60);
+                        this->checkCollisions(m_player2, stepDelta60);
+                        m_player2->updateSpecial((float)stepDelta);
                     }
                     this->checkSpawnObjects();
                 }
@@ -207,9 +195,9 @@ class $modify(PlayLayer) {
         m_player1->updateCheckpointTest();
         m_effectManager->postCollisionCheck();
         this->updateQueuedLabels();
-        m_player1->updateRotation(local_84);
+        m_player1->updateRotation(delta60);
         if (((((m_isDualMode) &&
-               (m_player2->updateRotation(local_84),
+               (m_player2->updateRotation(delta60),
                 m_isDualMode)) &&
               (m_player1->m_isBall)) &&
              ((
@@ -260,12 +248,11 @@ class $modify(PlayLayer) {
         CCPoint CStack_60;
         if (!m_player1->m_isLocked) {
             auto pCVar8 = m_player1->getPosition();
-            auto local_98 = pCVar8;
             m_player1->m_position = m_player1->getPosition();
             if (m_isDualMode) {
                 m_player2->m_position = m_player2->getPosition();
             }
-            fVar16 = m_mirrorTransition;
+            float fVar16 = m_mirrorTransition;
             if ((fVar16 != 0.0) && (fVar16 != 1.0)) {
                 if (m_cameraFlip == -1.0) {
                     fVar16 = 1.0 - fVar16;
@@ -280,7 +267,7 @@ class $modify(PlayLayer) {
                 }
             }
         }
-        this->updateCamera(local_84);
+        this->updateCamera(delta60);
         this->updateVisibility();
         m_player1->m_unk688 = m_totalTime;
         m_player2->m_unk688 = m_totalTime;
@@ -289,7 +276,7 @@ class $modify(PlayLayer) {
             // FIXME: add AudioEffectsLayer members to geode
             from<float>(this_01, 0x1a4) = (float)from<float>(this_01, 0x1a4) + delta;
             if (from<CCArray*>(this_01, 0x1a0) != (CCArray*)0x0) {
-                this_01->audioStep(local_84);
+                this_01->audioStep(delta60);
             }
         }
         this->updateLevelColors();
