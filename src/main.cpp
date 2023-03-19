@@ -35,24 +35,26 @@ class $modify(PlayLayer) {
                     const double timeSinceLastKickAttempt = timeSeconds - m_inlineCalculatedKickTime;
                     m_accumulatedKickDeltaTime = CCDirector::sharedDirector()->getActualDeltaTime() + m_accumulatedKickDeltaTime;
                     if (timeSinceLastKickAttempt >= 0.0 && timeSinceLastKickAttempt <= 100.0) {
-                        if (timeSinceLastKickAttempt <= 2.0)
-                            goto LAB_00602be9;
-                        if (timeSinceLastKickAttempt <= m_accumulatedKickDeltaTime * 1.15) {
-                            m_accumulatedKickCounter--;
-                        } else {
-                            m_accumulatedKickCounter++;
+                        if (timeSinceLastKickAttempt > 2.0) {
+                            if (timeSinceLastKickAttempt <= m_accumulatedKickDeltaTime * 1.15) {
+                                m_accumulatedKickCounter--;
+                            } else {
+                                m_accumulatedKickCounter++;
+                            }
+                            if (m_accumulatedKickCounter < 0) {
+                                m_accumulatedKickCounter = 0;
+                            }
+                            if (m_accumulatedKickCounter > 2) {
+                                m_shouldTryToKick = true;
+                                m_kickCheckDeltaSnapshot = (static_cast<float>(rand()) / float(RAND_MAX)) * 10.0;
+                                m_inlineCalculatedKickTime = timeSeconds;
+                            } else {
+                                m_inlineCalculatedKickTime = 0.0;
+                            }
                         }
-                        if (m_accumulatedKickCounter < 0) {
-                            m_accumulatedKickCounter = 0;
-                        }
-                        if (m_accumulatedKickCounter > 2) {
-                            m_shouldTryToKick = true;
-                            m_kickCheckDeltaSnapshot = (static_cast<float>(rand()) / float(RAND_MAX)) * 10.0;
-                            m_inlineCalculatedKickTime = timeSeconds;
-                            goto LAB_00602be9;
-                        }
+                    } else {
+                        m_inlineCalculatedKickTime = 0.0;
                     }
-                    m_inlineCalculatedKickTime = 0.0;
                 } else {
                     m_inlineCalculatedKickTime = getTimeInSeconds();
                 }
@@ -61,7 +63,6 @@ class $modify(PlayLayer) {
             }
         }
 
-    LAB_00602be9:
         m_effectManager->updateColorEffects(delta);
         m_effectManager->updatePulseEffects(delta);
         m_effectManager->updateOpacityEffects(delta);
