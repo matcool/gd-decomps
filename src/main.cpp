@@ -99,8 +99,8 @@ class $modify(PlayLayer) {
             m_player2->m_touchingRings->removeAllObjects();
         }
         for (unsigned int i = 0; i < m_screenRingObjects->count(); i++) {
-            auto* ring = static_cast<GameObject*>(m_screenRingObjects->objectAtIndex(i));
-            ring->m_unk36D = false;
+            auto* object = static_cast<GameObject*>(m_screenRingObjects->objectAtIndex(i));
+            object->m_unk36D = false;
         }
 
         const double delta60 = delta * 60.0;
@@ -200,88 +200,85 @@ class $modify(PlayLayer) {
         m_player1->updateRotation(delta60);
         if (m_isDualMode) {
             m_player2->updateRotation(delta60);
-            if (m_player1->m_isBall && m_player2->m_isBall // if both players are ball
-                && !m_levelSettings->m_twoPlayerMode // and its not two player mode
-                && m_player1->m_isUpsideDown == m_player2->m_isUpsideDown // and they match gravity
-            ) {
-                const float local_78_x = (float)(m_player1->getScaleX() * (float10)30.0 * (float10)0.5);
-                const float local_98 = m_player2->getScaleX() * (float10)30.0 * (float10)0.5;
-                const float fVar16 = fabs(m_player1->getPosition().y - m_player2->getPosition().y);
-                float local_9c = local_78_x;
-                if (fVar16 < local_98 + local_78_x + 5.0) {
-                    if ((m_player1->m_isSliding) ||
-                        (m_player2->m_isSliding)) {
-                        // this is code for when the two balls touch in the same gravity in dual mode
-                        auto* pPVar3 = m_player2;
-                        auto* this_03 = pPVar3;
-                        auto* local_8c = m_player1;
-                        if (!m_player1->m_isSliding && pPVar3->m_isSliding) {
-                            this_03 = m_player1;
-                            local_8c = pPVar3;
-                            local_9c = local_98;
-                        }
-                        this_03->flipGravity(!this_03->m_isUpsideDown, true);
-                        this_03->m_yVelocity = this_03->m_isUpsideDown ? 2.0 : -2.0;
-                        auto pCVar8 = local_8c->getPosition();
-                        auto* this_02 = CCCircleWave::create(local_9c + 2.f, local_9c * 4.f, 0.3f, false, false);
-                        this_02->m_color = local_8c->m_playerColor1;
-                        this_02->m_lineWidth = 4;
-                        this_02->setPosition(pCVar8);
-                        m_objectLayer->addChild(this_02, 0);
-                        this_02->m_filled = 1;
-                        this_02->followObject(local_8c, false);
+
+            const bool bothBall = m_player1->m_isBall && m_player2->m_isBall;
+            const bool matchingGravity = m_player1->m_isUpsideDown == m_player2->m_isUpsideDown;
+            if (!m_levelSettings->m_twoPlayerMode && bothBall && matchingGravity) {
+                const float halfPlayer1Size = m_player1->getScaleX() * 30.f * 0.5f;
+                const float halfPlayer2Size = m_player2->getScaleX() * 30.f * 0.5f;
+                const float yDistance = fabs(m_player1->getPosition().y - m_player2->getPosition().y);
+                if (yDistance < halfPlayer2Size + halfPlayer1Size + 5.0 && (m_player1->m_isSliding || m_player2->m_isSliding)) {
+                    // this is code for when the two balls touch in the same gravity in dual mode
+                    auto* playerToSwitch = m_player2;
+                    auto* otherPlayer = m_player1;
+                    float otherPlayerSize = halfPlayer1Size;
+                    if (!m_player1->m_isSliding && m_player2->m_isSliding) {
+                        playerToSwitch = m_player1;
+                        otherPlayer = m_player2;
+                        otherPlayerSize = halfPlayer2Size;
                     }
+                    playerToSwitch->flipGravity(!playerToSwitch->m_isUpsideDown, true);
+                    playerToSwitch->m_yVelocity = playerToSwitch->m_isUpsideDown ? 2.0 : -2.0;
+                    auto* circle = CCCircleWave::create(otherPlayerSize + 2.f, otherPlayerSize * 4.f, 0.3f, false, false);
+                    circle->m_color = otherPlayer->m_playerColor1;
+                    circle->m_lineWidth = 4;
+                    circle->setPosition(otherPlayer->getPosition());
+                    m_objectLayer->addChild(circle, 0);
+                    circle->m_filled = 1;
+                    circle->followObject(otherPlayer, false);
                 }
             }
         }
-        for (unsigned int uVar13 = 0; uVar13 < m_screenRingObjects->count(); ++uVar13) {
-            auto* pCVar7 = (GameObject*)m_screenRingObjects->objectAtIndex(uVar13);
+
+        for (unsigned int i = 0; i < m_screenRingObjects->count(); ++i) {
+            auto* object = static_cast<GameObject*>(m_screenRingObjects->objectAtIndex(i));
             // inlined GameObject::updateState()
-            if (!pCVar7->m_unk36D) {
-                pCVar7->powerOffObject();
+            if (!object->m_unk36D) {
+                object->powerOffObject();
             }
         }
-        bool bVar4 = false;
-        CCPoint CStack_68;
-        CCPoint CStack_60;
+
+        bool isInMirrorTransition = false;
+        CCPoint player1TransitionPos;
+        CCPoint player2TransitionPos;
         if (!m_player1->m_isLocked) {
-            auto pCVar8 = m_player1->getPosition();
             m_player1->m_position = m_player1->getPosition();
             if (m_isDualMode) {
                 m_player2->m_position = m_player2->getPosition();
             }
-            float fVar16 = m_mirrorTransition;
-            if ((fVar16 != 0.0) && (fVar16 != 1.0)) {
+            float mirror = m_mirrorTransition;
+            // if currently in transition
+            if (mirror != 0.0 && mirror != 1.0) {
                 if (m_cameraFlip == -1.0) {
-                    fVar16 = 1.0 - fVar16;
+                    mirror = 1.0 - mirror;
                 }
-                bVar4 = true;
-                auto local_58 = CCPoint(fVar16 * 150.0, 0.0);
-                auto pCVar8 = m_player1->getPosition();
-                CStack_68 = pCVar8 + local_58;
+                isInMirrorTransition = true;
+                const auto transitionOffset = CCPoint(mirror * 150.0, 0.0);
+                player1TransitionPos = m_player1->getPosition() + transitionOffset;
                 if (m_isDualMode) {
-                    pCVar8 = m_player2->getPosition();
-                    CStack_60 = pCVar8 + local_58;
+                    player2TransitionPos = m_player2->getPosition() + transitionOffset;
                 }
             }
         }
+
         this->updateCamera(delta60);
         this->updateVisibility();
+        
         m_player1->m_unk688 = m_totalTime;
         m_player2->m_unk688 = m_totalTime;
         if (!m_isAudioMeteringSupported) {
-            auto* this_01 = m_audioEffectsLayer;
+            auto* audioEffects = m_audioEffectsLayer;
             // FIXME: add AudioEffectsLayer members to geode
-            from<float>(this_01, 0x1a4) = (float)from<float>(this_01, 0x1a4) + delta;
-            if (from<CCArray*>(this_01, 0x1a0) != (CCArray*)0x0) {
-                this_01->audioStep(delta60);
+            from<float>(audioEffects, 0x1a4) = (float)from<float>(audioEffects, 0x1a4) + delta;
+            if (from<CCArray*>(audioEffects, 0x1a0) != (CCArray*)0x0) {
+                audioEffects->audioStep(delta60);
             }
         }
         this->updateLevelColors();
-        if (bVar4) {
-            m_player1->setPosition(CStack_68);
+        if (isInMirrorTransition) {
+            m_player1->setPosition(player1TransitionPos);
             if (m_isDualMode) {
-                m_player2->setPosition(CStack_60);
+                m_player2->setPosition(player2TransitionPos);
             }
         }
         this->updateProgressbar();
