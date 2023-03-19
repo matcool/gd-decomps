@@ -113,20 +113,21 @@ class $modify(PlayLayer) {
 
         double delta240 = delta60 * 4.0;
         float local_8c = delta240 < 0.0 ? ceil(delta240 - 0.5) : floor(delta240 + 0.5);
-        float stepsCountF = 4.0;
+        int subStepCount = 4;
         if (local_8c >= 4.0) {
-            stepsCountF = local_8c;
+            subStepCount = (int)local_8c;
         }
-        int subStepCount = (int)stepsCountF;
 
         m_player1->m_unk64C = m_player1->getPosition();
         if (m_isDualMode) {
             m_player2->m_unk64C = m_player2->getPosition();
         }
-        float stepDelta60 = delta60 / stepsCountF;
+
+        float stepDelta60 = delta60 / (float)subStepCount;
         double stepDelta = delta / (float)subStepCount;
+
         m_effectManager->preCollisionCheck();
-        if (0 < subStepCount) {
+        if (subStepCount > 0) {
             for (int pPVar12 = 0; pPVar12 < subStepCount; ++pPVar12) {
                 float pPStack_7c = this->unknown5f4;
                 if ((float)pPStack_7c != 0.0) {
