@@ -252,7 +252,7 @@ class $modify(PlayLayer) {
                     if ((cStack_85 != false) && (this->m_isDualMode != false)) {
                         m_player2->update(fStack_80);
                         this->checkCollisions(this->m_player2, fStack_80);
-                        this->m_player2->PlayerObject::updateSpecial((float)local_9c);
+                        this->m_player2->updateSpecial((float)local_9c);
                     }
                     this->checkSpawnObjects();
                 }
@@ -275,16 +275,16 @@ class $modify(PlayLayer) {
             float fVar15 =  pPVar12->getScaleX(); // (float10)(**(code**)(*(int*)&(pPVar12->field0_0x0).inherit.field0_0x0 + 0x40))();
             float local_78_x = (float)(pPVar12->getScaleX() * (float10)30.0 * (float10)0.5);
             fVar15 = m_player2->getScaleX(); //(float10)(**(code**)(*(int*)&((this->m_player2)->field0_0x0).inherit.field0_0x0 +0x40))();
-            local_98 = m_player2->getScaleX() * (float10)30.0 * (float10)0.5;
+            float local_98 = m_player2->getScaleX() * (float10)30.0 * (float10)0.5;
             // iVar14 = (**(code**)(*(int*)&((this->m_player1)->field0_0x0).inherit.field0_0x0 + 100))();
             // iVar10 = (**(code**)(*(int*)&((this->m_player2)->field0_0x0).inherit.field0_0x0 + 100))();
             // fVar16 = *(float*)(iVar14 + 4) - *(float*)(iVar10 + 4);
-            float fVar16 = fabs(m_player1->getPosition().x - m_player2->getPosition().x);
+            float fVar16 = fabs(m_player1->getPosition().y - m_player2->getPosition().y);
             float local_9c = local_78_x;
             if (fVar16 < local_98 + local_78_x + 5.0) {
                 pPVar12 = this->m_player1;
                 if ((pPVar12->m_isSliding != false) ||
-                    ((this->m_player2)->m_isSliding != false)) {
+                    (this->m_player2->m_isSliding != false)) {
                     // this is code for when the two balls touch in the same gravity in dual mode
 
                     auto* pPVar3 = this->m_player2;
@@ -296,8 +296,8 @@ class $modify(PlayLayer) {
                         local_9c = local_98;
                     }
                     // pCStack_cc = (CCNode*)0x603376;
-                    this_03->flipGravity(this_03->m_isUpsideDown == false, true);
-                    this_03->m_yVelocity = (double)(((uint)(this_03->m_isUpsideDown == false) * 2 + -1) * -2);
+                    this_03->flipGravity(!this_03->m_isUpsideDown, true);
+                    this_03->m_yVelocity = this_03->m_isUpsideDown ? 2.0 : -2.0;
                     auto pCVar8 = local_8c->getPosition();
                     // cocos2d::CCPoint::CCPoint(&local_78, pCVar8);
                     auto* this_02 = CCCircleWave::create(local_9c + 2.0,local_9c * 4.0,0.3,false,false);
@@ -306,17 +306,7 @@ class $modify(PlayLayer) {
                     this_02->setPosition(pCVar8);
                     this->m_objectLayer->addChild(this_02, 0);
                     this_02->m_filled = 1;
-                    if (this_02->m_child != nullptr) {
-                        this_02->m_child->release();
-                        this_02->m_child = nullptr;
-                    }
-                    // this is just a guess tho
-                    // this_02->m_children = ?????; // *(float*)(this_02 + 1) = local_98.x;
-                    this_02->m_child = local_8c;
-                    local_8c->retain();
-                    this_02->unschedule(schedule_selector(CCCircleWave::updatePosition));
-                    this_02->schedule(schedule_selector(CCCircleWave::updatePosition));
-                    this_02->setPosition(this_02->m_child->getPosition());
+                    this_02->followObject(local_8c, false);
                 }
             }
         }
@@ -325,6 +315,7 @@ class $modify(PlayLayer) {
         if (uVar6 != 0) {
             do {
                 auto* pCVar7 = (GameObject*)this->m_screenRingObjects->objectAtIndex(uVar13);
+                // pCVar7->updateState();
                 if (pCVar7->m_isDontFade == false) {
                     pCVar7->powerOffObject();
                     // (**(code**)((int)pCVar7->field0_0x0 + 0x27c))();
