@@ -179,7 +179,7 @@ class $modify(PlayLayer) {
         m_effectManager->preCollisionCheck();
         local_8c = 0;
         if (0 < iVar14) {
-            // local_70 = (CCPoint)((ulonglong)local_70 & 0xffffffff00000000 | (ulonglong)(iVar14 - 1));
+            auto local_70 = iVar14 - 1;
             do {
                 float pPVar12 = local_8c;
                 float pPStack_7c = this->unknown5f4;
@@ -229,7 +229,7 @@ class $modify(PlayLayer) {
                     pPVar18 = 0;
                 }
                 this->m_effectManager->m_acceleration = (float)pPVar18;
-                this->m_effectManager->prepareMoveActions(local_9c, (int)pPVar12 < (int)local_70.x);
+                this->m_effectManager->prepareMoveActions(local_9c, (int)pPVar12 < (int)local_70);
                 this->processMoveActionsStep(local_9c);
                 if ((m_antiCheatPassed == false) &&
                     (pPVar12 = local_8c, m_antiCheatObject != nullptr)) {
