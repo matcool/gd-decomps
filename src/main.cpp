@@ -3,14 +3,6 @@
 
 using namespace geode::prelude;
 
-using uchar = unsigned char;
-using undefined = unsigned char;
-using undefined2 = unsigned short;
-using undefined4 = unsigned int;
-using uint = unsigned int;
-using float10 = long double;
-using longlong = long long;
-
 template <class T, class P>
 inline __forceinline T& from(P* ptr, intptr_t offset) {
     return *reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(ptr) + offset);
@@ -19,8 +11,10 @@ inline __forceinline T& from(P* ptr, intptr_t offset) {
 // this->field\d+?_(0x[0-9a-fA-F]+)
 // from<void>(this, $1)
 
-float get_time_idk() {
-    return time(nullptr) / 1000.f;
+// this is some semi-inlined static function on windows,
+// which does the same as this one i hope. besides, the time is only used for the anti cheat so who cares!
+float getTimeInSeconds() {
+    return time(nullptr);
 }
 
 class $modify(PlayLayer) {
@@ -32,19 +26,18 @@ class $modify(PlayLayer) {
         }
         this->unk508 += delta;
         if (this->unk518 <= 0.0) {
-            this->unk518 = get_time_idk();
+            this->unk518 = getTimeInSeconds();
         }
         if (m_level->m_levelType != GJLevelType::Local) {
             if (!m_shouldTryToKick) {
-                if (0.0 < m_inlineCalculatedKickTime) {
-                    const float local_70 = get_time_idk();
-                    const double local_98 = (double)local_70 - m_inlineCalculatedKickTime;
-                    const double dVar17 = cocos2d::CCDirector::sharedDirector()->getActualDeltaTime() + m_accumulatedKickDeltaTime;
-                    m_accumulatedKickDeltaTime = dVar17;
-                    if ((0.0 <= (double)local_98) && ((double)local_98 <= 100.0)) {
-                        if ((double)local_98 <= 2.0)
+                if (m_inlineCalculatedKickTime > 0.0) {
+                    const float timeSeconds = getTimeInSeconds();
+                    const double timeSinceLastKickAttempt = timeSeconds - m_inlineCalculatedKickTime;
+                    m_accumulatedKickDeltaTime = CCDirector::sharedDirector()->getActualDeltaTime() + m_accumulatedKickDeltaTime;
+                    if (timeSinceLastKickAttempt >= 0.0 && timeSinceLastKickAttempt <= 100.0) {
+                        if (timeSinceLastKickAttempt <= 2.0)
                             goto LAB_00602be9;
-                        if ((double)local_98 <= dVar17 * 1.149999976158142) {
+                        if (timeSinceLastKickAttempt <= m_accumulatedKickDeltaTime * 1.15) {
                             m_accumulatedKickCounter--;
                         } else {
                             m_accumulatedKickCounter++;
@@ -54,19 +47,17 @@ class $modify(PlayLayer) {
                         }
                         if (2 < m_accumulatedKickCounter) {
                             m_shouldTryToKick = true;
-                            m_kickCheckDeltaSnapshot = ((float)rand() / 32767.0) * 10.0;
-                            m_inlineCalculatedKickTime = (double)local_70;
-                        }
-                        if (m_shouldTryToKick)
+                            m_kickCheckDeltaSnapshot = (static_cast<float>(rand()) / float(RAND_MAX)) * 10.0;
+                            m_inlineCalculatedKickTime = timeSeconds;
                             goto LAB_00602be9;
+                        }
                     }
                     m_inlineCalculatedKickTime = 0.0;
                 } else {
-                    m_inlineCalculatedKickTime = get_time_idk();
+                    m_inlineCalculatedKickTime = getTimeInSeconds();
                 }
             } else {
-                const double dVar17 = get_time_idk();
-                if ((double)m_kickCheckDeltaSnapshot < dVar17 - m_inlineCalculatedKickTime) {
+                if (m_kickCheckDeltaSnapshot < getTimeInSeconds() - m_inlineCalculatedKickTime) {
                     this->onQuit();
                 }
             }
@@ -159,20 +150,20 @@ class $modify(PlayLayer) {
                 m_spawnedGroups->removeAllObjects();
 
                 const bool wasDualMode = m_isDualMode;
-                float pPVar18 = m_player1->getPosition().y - m_player1->m_firstPosition.y;
+                float yDifference = m_player1->getPosition().y - m_player1->m_firstPosition.y;
                 if (!m_isDead) {
-                    if (stepDelta60 * 16.0 < fabs(pPVar18 - m_player1->m_unk69C)) {
-                        pPVar18 = 0;
+                    if (stepDelta60 * 16.0 < fabs(yDifference - m_player1->m_unk69C)) {
+                        yDifference = 0;
                     }
                     m_effectManager->m_velocity = m_player1->m_playerSpeed * m_player1->m_xVelocity * stepDelta60;
                 } else {
                     m_effectManager->m_velocity = 0.0;
                 }
                 if (m_isDead) {
-                    pPVar18 = 0;
+                    yDifference = 0;
                 }
                 // is this really acceleration?
-                m_effectManager->m_acceleration = pPVar18;
+                m_effectManager->m_acceleration = yDifference;
                 const bool isLastSubStep = curStep == (subStepCount - 1);
                 m_effectManager->prepareMoveActions(stepDelta, !isLastSubStep);
                 this->processMoveActionsStep(stepDelta);
