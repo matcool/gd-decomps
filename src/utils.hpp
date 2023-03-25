@@ -25,3 +25,9 @@ static constexpr auto DECOMP_HOOK_PRIORITY = 99999;
     static void onModify(auto& self) { \
         (void) self.setHookPriority(name, DECOMP_HOOK_PRIORITY); \
     }
+
+// this is some semi-inlined static function on windows, which does the same as this one i hope.
+// besides, the time is only used for the anti cheat so who cares!
+static float getTimeInSeconds() {
+    return time(nullptr);
+}

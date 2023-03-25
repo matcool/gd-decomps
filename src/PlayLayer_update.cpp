@@ -5,12 +5,6 @@
 
 using namespace geode::prelude;
 
-// this is some semi-inlined static function on windows, which does the same as this one i hope.
-// besides, the time is only used for the anti cheat so who cares!
-float getTimeInSeconds() {
-    return time(nullptr);
-}
-
 // using members from geode#7e60770
 
 class $modify(PlayLayer) {
