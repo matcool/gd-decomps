@@ -286,5 +286,6 @@ class $modify(PlayerObject) {
             }
         }
     }
+
     SET_DECOMP_PRIORITY("PlayerObject::updateJump");
 };
