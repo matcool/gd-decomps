@@ -23,5 +23,5 @@ static constexpr auto DECOMP_HOOK_PRIORITY = 99999;
 
 #define SET_DECOMP_PRIORITY(name) \
     static void onModify(auto& self) { \
-        (void) self.setHookPriorty(name, DECOMP_HOOK_PRIORITY); \
+        (void) self.setHookPriority(name, DECOMP_HOOK_PRIORITY); \
     }
