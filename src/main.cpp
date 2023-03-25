@@ -1,15 +1,9 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
 
+#include "utils.hpp"
+
 using namespace geode::prelude;
-
-template <class T, class P>
-inline __forceinline T& from(P* ptr, intptr_t offset) {
-    return *reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(ptr) + offset);
-}
-
-// this->field\d+?_(0x[0-9a-fA-F]+)
-// from<void>(this, $1)
 
 // this is some semi-inlined static function on windows, which does the same as this one i hope.
 // besides, the time is only used for the anti cheat so who cares!
