@@ -287,4 +287,6 @@ class $modify(PlayLayer) {
         this->updateProgressbar();
         this->updateEffectPositions();
     }
+
+    SET_DECOMP_PRIORITY("PlayLayer::update");
 };
