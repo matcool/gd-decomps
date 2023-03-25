@@ -79,15 +79,17 @@ class $modify(PlayerObject) {
 					m_unk53E = true;
 				}
 			}
-			// FIXME: ship ground particles have wrong behavior, like touch the ceiling and then release
-			if (
-				!m_isDart && m_isSliding &&
-				!m_isLocked && !m_isHidden &&
-				(
-					(!m_isUpsideDown && m_yVelocity > -1.0) ||
-					(m_yVelocity <= 1.0 && m_yVelocity != 1.0)
-				)
-			) {
+			bool resume = false;
+			if (!m_isLocked && !m_isHidden && !m_isDart && m_isSliding) {
+				if (!m_isUpsideDown) {
+					if (m_yVelocity > -1.0) {
+						resume = true;
+					}
+				} else if (m_yVelocity <= 1.0 && m_yVelocity != 1.0) {
+					resume = true;
+				}
+			}
+			if (resume) {
 				m_vehicleGroundParticles->resumeSystem();
 			} else {
 				m_vehicleGroundParticles->stopSystem();
