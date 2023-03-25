@@ -7,20 +7,20 @@ using namespace geode::prelude;
 class $modify(PlayerObject) {
     void update(float dt) {
 		if (m_unk560 > 0.0) {
-			double mixFactor = (m_unk688 - m_unk560) - (double)from<float>(this, 0x56c);
-			if (mixFactor < (double)from<float>(this, 0x568)) {
+			const double mixFactor = m_unk688 - m_unk560 - from<float>(this, 0x56c);
+			if (mixFactor < from<float>(this, 0x568)) {
 				if (mixFactor <= 0.0 && m_unk63F) {
 					return;
 				}
 				this->setColor(GameToolbox::multipliedColorValue(
 					from<ccColor3B>(this, 0x570),
 					m_playerColor1,
-					(float)(mixFactor / (double)from<float>(this, 0x568))
+					mixFactor / from<float>(this, 0x568)
 				));
 				this->setSecondColor(GameToolbox::multipliedColorValue(
 					from<ccColor3B>(this, 0x573),
 					m_playerColor2,
-					(float)(mixFactor / (double)from<float>(this, 0x568))
+					mixFactor / from<float>(this, 0x568)
 				));
 			} else {
 				m_unk560 = 0.0;
@@ -38,7 +38,7 @@ class $modify(PlayerObject) {
 
 		m_unk69C = 0.0;
 		if (!m_isLocked) {
-			float dtSlow = dt * 0.9f;
+			const float dtSlow = dt * 0.9f;
 			
 			this->updateJump(dtSlow);
 			
@@ -46,7 +46,7 @@ class $modify(PlayerObject) {
 				m_yVelocity = 0.0;
 			}
 
-			float velX = dt * m_xVelocity * m_playerSpeed;
+			const float velX = dt * m_xVelocity * m_playerSpeed;
 			float velY = dtSlow * m_yVelocity;
 
 			if (m_isDashing) {
@@ -59,7 +59,7 @@ class $modify(PlayerObject) {
 			}
 
 			m_unk69C = velY;
-			CCPoint velocity { velX, velY };
+			const CCPoint velocity { velX, velY };
 			// PlayerObject::setPosition(const CCPoint&), does a lot of stuff
 			this->setPosition(this->getPosition() + velocity);
 		}
@@ -179,12 +179,12 @@ class $modify(PlayerObject) {
 			this->updateDashAnimation();
 		}
 
-		// PlayerObject::updateStateVariables()
+		// inlined PlayerObject::updateStateVariables()
 		from<int>(this, 0x9d0) -= 1;
 		from<int>(this, 0x9d4) -= 1;
 		from<int>(this, 0x9d8) -= 1;
 		from<int>(this, 0x9c8) -= 1;
-		// PlayerObject::updateJumpVariables()
+		// inlined PlayerObject::updateJumpVariables()
 		m_isHolding2 = m_isHolding;
 		m_hasJustHeld2 = m_hasJustHeld;
 		m_unk615 = false;
