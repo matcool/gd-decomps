@@ -4,6 +4,8 @@ using namespace geode::prelude;
 
 #include "utils.hpp"
 
+// using members from geode#7e60770
+
 class $modify(PlayerObject) {
     void update(float dt) {
 		if (m_unk560 > 0.0) {
