@@ -6,38 +6,37 @@ using namespace geode::prelude;
 
 class $modify(PlayerObject) {
     void update(float dt) {
-		if (from<double>(this, 0x560) > 0.0) {
-			double mixFactor = (from<double>(this, 0x688) - from<double>(this, 0x560)) - (double)from<float>(this, 0x56c);
+		if (m_unk560 > 0.0) {
+			double mixFactor = (m_unk688 - m_unk560) - (double)from<float>(this, 0x56c);
 			if (mixFactor < (double)from<float>(this, 0x568)) {
-				if (mixFactor <= 0.0 && from<bool>(this, 0x63f)) {
+				if (mixFactor <= 0.0 && m_unk63F) {
 					return;
 				}
 				this->setColor(GameToolbox::multipliedColorValue(
 					from<ccColor3B>(this, 0x570),
-					from<ccColor3B>(this, 0x60a),
+					m_playerColor1,
 					(float)(mixFactor / (double)from<float>(this, 0x568))
 				));
 				this->setSecondColor(GameToolbox::multipliedColorValue(
 					from<ccColor3B>(this, 0x573),
-					from<ccColor3B>(this, 0x60d),
+					m_playerColor2,
 					(float)(mixFactor / (double)from<float>(this, 0x568))
 				));
 			} else {
-				from<double>(this, 0x560) = 0.0;
-				this->setColor(from<ccColor3B>(this, 0x60a));
-				this->setSecondColor(from<ccColor3B>(this, 0x60d));
+				m_unk560 = 0.0;
+				this->setColor(m_playerColor1);
+				this->setSecondColor(m_playerColor2);
 			}
 		}
 
-		if (from<bool>(this, 0x63f)) {
+		if (m_unk63F) {
 			log::info("its set!");
 			return;
 		}
 
-		// GameObject::m_firstPosition ?
-		from<CCPoint>(this, 0x424) = this->getPosition();
+		this->m_firstPosition = this->getPosition();
 
-		from<float>(this, 0x69c) = 0.0;
+		m_unk69C = 0.0;
 		if (!m_isLocked) {
 			float dtSlow = dt * 0.9f;
 			
@@ -59,7 +58,7 @@ class $modify(PlayerObject) {
 				}
 			}
 
-			from<float>(this, 0x69c) = velY;
+			m_unk69C = velY;
 			CCPoint velocity { velX, velY };
 			// PlayerObject::setPosition(const CCPoint&), does a lot of stuff
 			this->setPosition(this->getPosition() + velocity);
@@ -69,17 +68,18 @@ class $modify(PlayerObject) {
 		if (m_isShip || m_isBird || m_isDart) {
 			if (m_isShip) {
 				if (!m_isHolding || (m_isInPlayLayer && this->levelFlipping()) || m_isHidden) {
-					if (from<bool>(this, 0x53e)) {
+					if (m_unk53E) {
 						m_shipBoostParticles->stopSystem();
 					}
-					from<bool>(this, 0x53e) = false;
+					m_unk53E = false;
 				} else {
-					if (!from<bool>(this, 0x53e)) {
+					if (!m_unk53E) {
 						m_shipBoostParticles->resumeSystem();
 					}
-					from<bool>(this, 0x53e) = true;
+					m_unk53E = true;
 				}
 			}
+			// FIXME: ship ground particles have wrong behavior, like touch the ceiling and then release
 			if (
 				!m_isDart && m_isSliding &&
 				!m_isLocked && !m_isHidden &&
@@ -94,7 +94,7 @@ class $modify(PlayerObject) {
 			}
 		} else {
 			if (!m_isSliding || (m_isInPlayLayer && this->levelFlipping() || m_isLocked) || m_isHidden) {
-				if (from<bool>(this, 0x53d) && this->getActionByTag(2) == nullptr) {
+				if (m_unk53D && this->getActionByTag(2) == nullptr) {
 					// disable ground particles when not on ground
 					auto* sequenceAction = cocos2d::CCSequence::create(
 						cocos2d::CCDelayTime::create(0.06f),
@@ -105,10 +105,10 @@ class $modify(PlayerObject) {
 					this->runAction(sequenceAction);
 				}
 			} else {
-				if (!from<bool>(this, 0x53d)) {
+				if (!m_unk53D) {
 					m_playerGroundParticles->resumeSystem();
 				}
-				from<bool>(this, 0x53d) = true;
+				m_unk53D = true;
 				this->stopActionByTag(2);
 			}
 		}
@@ -159,7 +159,7 @@ class $modify(PlayerObject) {
 			}
 		}
 
-		from<bool>(this, 0x5b0) = false;
+		m_unk5B0 = false;
 
 		if (m_ghostTrail != nullptr) {
 			CCPoint somePoint { 0.f, 0.f };
@@ -185,8 +185,8 @@ class $modify(PlayerObject) {
 		// PlayerObject::updateJumpVariables()
 		m_isHolding2 = m_isHolding;
 		m_hasJustHeld2 = m_hasJustHeld;
-		from<bool>(this, 0x615) = false;
-		from<bool>(this, 0x616) = false;
+		m_unk615 = false;
+		m_unk616 = false;
 	}
 
     SET_DECOMP_PRIORITY("PlayerObject::update");
