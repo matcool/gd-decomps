@@ -4,7 +4,7 @@ using namespace geode::prelude;
 
 #include "utils.hpp"
 
-// using members from geode#7e60770
+// using members from geode#48e84e4
 
 class $modify(PlayerObject) {
     void updateJump(float dt) {
@@ -203,7 +203,7 @@ class $modify(PlayerObject) {
                         this->m_robotSprite->tweenToAnimation("jump_loop", 0.1);
                     } else if (!this->m_isSpider) {
                         // should only get here when cube
-                        this->runRotateAction();
+                        this->runRotateAction(false);
                     }
                 }
                 // return;
@@ -263,7 +263,7 @@ class $modify(PlayerObject) {
                     }
                     if (!this->m_isBall && !this->m_isSpider && !this->m_isRobot
                         && this->getActionByTag(0) == nullptr && !this->m_isOnSlope && !this->m_unk4B0) {
-                        this->runRotateAction();
+                        this->runRotateAction(false);
                     }
                     if (!this->m_isUpsideDown) {
                         if (this->m_yVelocity >= -4.0) {
