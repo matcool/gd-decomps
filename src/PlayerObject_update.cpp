@@ -4,14 +4,14 @@ using namespace geode::prelude;
 
 #include "utils.hpp"
 
-// using members from geode#7e60770
+// using members from geode#945c882
 
 class $modify(PlayerObject) {
     void update(float dt) {
 		if (m_unk560 > 0.0) {
 			const double mixFactor = m_unk688 - m_unk560 - from<float>(this, 0x56c);
 			if (mixFactor < from<float>(this, 0x568)) {
-				if (mixFactor <= 0.0 && m_unk63F) {
+				if (mixFactor <= 0.0 && m_isDead) {
 					return;
 				}
 				this->setColor(GameToolbox::multipliedColorValue(
@@ -31,8 +31,8 @@ class $modify(PlayerObject) {
 			}
 		}
 
-		if (m_unk63F) {
-			log::info("its set!");
+		if (m_isDead) {
+			// log::info("its set!");
 			return;
 		}
 

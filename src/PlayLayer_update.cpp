@@ -5,7 +5,7 @@
 
 using namespace geode::prelude;
 
-// using members from geode#7e60770
+// using members from geode#945c882
 
 class $modify(PlayLayer) {
     void update(float delta) {
@@ -60,13 +60,13 @@ class $modify(PlayLayer) {
         m_player1->m_collisionLog->removeAllObjects();
         m_player1->m_collisionLog1->removeAllObjects();
         // no idea what these are..
-        m_player1->m_unk4B8 = 0;
-        m_player1->m_unk4BC = 0;
+        m_player1->m_collidedGroundObjectUniqueID = 0;
+        m_player1->m_collidedCeilObjectUniqueID = 0;
         if (m_isDualMode) {
             m_player2->m_collisionLog->removeAllObjects();
             m_player2->m_collisionLog1->removeAllObjects();
-            m_player2->m_unk4B8 = 0;
-            m_player2->m_unk4BC = 0;
+            m_player2->m_collidedGroundObjectUniqueID = 0;
+            m_player2->m_collidedCeilObjectUniqueID = 0;
         }
         if (!m_player1->m_isLocked) {
             m_player1->setPosition(m_player1->m_position);
